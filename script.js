@@ -5,6 +5,7 @@ const twitterBtn = document.getElementById("twitter");
 const newQuoteBtn = document.getElementById("new-quote");
 const loader = document.getElementById("loader");
 
+
 // Loader functions 
 function loading() {
   loader.hidden = false;
@@ -17,35 +18,53 @@ function complete() {
 }
 
 // Generating a new quote
-function newQuote() {
-  loading()
-  const quote = apiQuotes[Math.floor(Math.random() * apiQuotes.length)];
-  if (!quote.author) {
-    authorText.innerText = "Unkonwn";
-  } else {
-    authorText.innerText = quote.author;
-  }
-  if (quote.text.length > 70) {
-    quoteText.classList.add("long-quote");
-  } else {
-    quoteText.classList.remove("long-quote");
-  }
-  quoteText.innerText = quote.text;
-  complete()
-}
+
+// function newQuote(data) {
+//   loading()
+//   const quote = getQuotes()
+//   console.log(quote)
+//   if (!quote.author) {
+//     authorText.innerText = "Unkonwn";
+//   } else {
+//     authorText.innerText = quote.author;
+//   }
+//   if (quote.text.length > 70) {
+//     quoteText.classList.add("long-quote");
+//   } else {
+//     quoteText.classList.remove("long-quote");
+//   }
+//   quoteText.innerText = quote.text;
+//   complete()
+// }
 
 // Fetching a quote from API
 async function getQuotes() {
   loading()
-  const apiUrl = "http://type.fit/api/quotes";
+  const apiUrl = "http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json";
+  const proxyUrl = 'https://limitless-reef-49600.herokuapp.com/'
   try {
-    const response = await fetch(apiUrl);
-    apiQuotes = await response.json();
-    newQuote();
+    const response = await fetch(proxyUrl + apiUrl);
+    const data = await response.json();
+    console.log(data)
+    if (!data.quoteAuthor) {
+      authorText.innerText = "Unkonwn";
+    } else {
+      authorText.innerText = data.quoteAuthor;
+    }
+    if (data.quoteText.text) {
+      console.log(data.quoteText.text)
+      quoteText.classList.add("long-quote");
+    } else {
+      quoteText.classList.remove("long-quote");
+    }
+    quoteText.innerText = data.quoteText;
+    complete()
   } catch (err) {
+    
     loading()
-    alert(err);
+    console.log(err);
   }
+  
 }
 
 // Sharing on Twitter
@@ -55,9 +74,8 @@ function tweetQuote() {
 }
 
 // Adding Event Listeners
-newQuoteBtn.addEventListener("click", newQuote);
+newQuoteBtn.addEventListener("click", getQuotes);
 twitterBtn.addEventListener("click", tweetQuote);
 
 // initializing function
 getQuotes();
-
