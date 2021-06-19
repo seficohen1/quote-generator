@@ -7,62 +7,42 @@ const loader = document.getElementById("loader");
 
 
 // Loader functions 
-function loading() {
+function showLoadingSpinner() {
   loader.hidden = false;
   quoteContainer.hidden = true;
 }
 
-function complete() {
+function removeLoadingSpinner() {
   quoteContainer.hidden = false;
   loader.hidden = true;
 }
 
-// Generating a new quote
-
-// function newQuote(data) {
-//   loading()
-//   const quote = getQuotes()
-//   console.log(quote)
-//   if (!quote.author) {
-//     authorText.innerText = "Unkonwn";
-//   } else {
-//     authorText.innerText = quote.author;
-//   }
-//   if (quote.text.length > 70) {
-//     quoteText.classList.add("long-quote");
-//   } else {
-//     quoteText.classList.remove("long-quote");
-//   }
-//   quoteText.innerText = quote.text;
-//   complete()
-// }
 
 // Fetching a quote from API
 async function getQuotes() {
-  loading()
+  showLoadingSpinner()
   const apiUrl = "http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json";
   const proxyUrl = 'https://limitless-reef-49600.herokuapp.com/'
   try {
     const response = await fetch(proxyUrl + apiUrl);
     const data = await response.json();
-    console.log(data)
     if (!data.quoteAuthor) {
       authorText.innerText = "Unkonwn";
     } else {
       authorText.innerText = data.quoteAuthor;
     }
     if (data.quoteText.text) {
-      console.log(data.quoteText.text)
       quoteText.classList.add("long-quote");
     } else {
       quoteText.classList.remove("long-quote");
     }
     quoteText.innerText = data.quoteText;
-    complete()
+    removeLoadingSpinner()
   } catch (err) {
     
-    loading()
-    console.log(err);
+    showLoadingSpinner()
+    alert('cannot fetch quote, please try again by refreshing the page');
+    
   }
   
 }
